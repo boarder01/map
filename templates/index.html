@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Map Click</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+
+<div id="map" style="height: 900px;"></div>
+
+<script>
+    var map = L.map('map').setView([46.22748, 7.35932], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    function onMapClick(e) {
+    var nomPoint = prompt("Entrez un nom pour ce point :", "Nom du point");
+    if (nomPoint != null && nomPoint != "") { // Vérifier que l'utilisateur a bien entré un nom
+        var point = {"nom": nomPoint, "latitude": e.latlng.lat, "longitude": e.latlng.lng};
+        console.log(point);
+
+        // Envoyer les données au serveur Flask
+        $.ajax({
+            url: '/add_point',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(point),
+            dataType: 'json',
+            success: function(response) {
+                console.log(response);
+            },
+            error: function(error) {
+                console.log(error);
+            }
+        });
+    }
+}
+
+    map.on('click', onMapClick);
+</script>
+
+</body>
+</html>
